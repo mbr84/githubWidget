@@ -1,9 +1,10 @@
-export const RECEIVE_USERS = 'RECEIVE_USERS';
+import SECRET_TOKEN from '../util/secrets.js';
+export const RECEIVE_USER = 'RECEIVE_USER';
 export const REMOVE_USER = 'REMOVE_USER';
 
-export const receiveUsers = users => ({
-  type: RECEIVE_USERS,
-  users,
+export const receiveUser = user => ({
+  type: RECEIVE_USER,
+  user,
 });
 
 export const removeUser = user => ({
@@ -11,28 +12,28 @@ export const removeUser = user => ({
   user,
 });
 
-const randomUserId = () => Math.floor(10000000 * Math.rand() + 100);
+const randomUserId = () => Math.floor(10000000 * Math.random() + 100);
 
-export const fetchUsers = () => {
-  const newUsers = [];
-  const fetchUser = (userId) => {
-    fetch(`https://api.github.com/user/${userId}`)
+const fetchUsers = () => (
+  dispatch => {
+    const fetchUser = (userId) => {
+      fetch(`https://api.github.com/user/${userId}?access_token=${SECRET_TOKEN}`)
       .then(response => {
         if (response.status >= 400) {
           fetchUser(randomUserId());
         }
         return response.json();
       })
-      .then(json => {
-        newUsers.push(json);
-      });
-  };
-
-  return dispatch => {
+      .then(json => dispatch(receiveUser(json)));
+    };
     for (let i = 0; i < 6; i++) {
-      fetchUser();
+      fetchUser(randomUserId());
     }
+  }
+);
 
-    dispatch(receiveUsers(newUsers));
-  };
-};
+export const fetchUsersIfLow = () => (
+  (dispatch, getState) => {
+    if (Object.keys(getState()).length <= 3) dispatch(fetchUsers());
+  }
+);
