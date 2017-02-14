@@ -14,26 +14,31 @@ export const removeUser = user => ({
 
 const randomUserId = () => Math.floor(10000000 * Math.random() + 100);
 
-const fetchUsers = () => (
+export const fetchUser = (userId) => (
   dispatch => {
-    const fetchUser = (userId) => {
-      fetch(`https://api.github.com/user/${userId}?access_token=${SECRET_TOKEN}`)
-      .then(response => {
-        if (response.status >= 400) {
-          fetchUser(randomUserId());
-        }
-        return response.json();
-      })
-      .then(json => dispatch(receiveUser(json)));
-    };
-    for (let i = 0; i < 6; i++) {
-      fetchUser(randomUserId());
+    fetch(`https://api.github.com/user/${userId}?access_token=${SECRET_TOKEN}`)
+    .then(response => {
+      if (response.status >= 400) {
+        fetchUser(randomUserId());
+      }
+      return response.json();
+    })
+    .then(json => {
+      if (json.message !== 'Not Found') dispatch(receiveUser(json));
+    });
+  }
+);
+
+export const fetchUsers = () => (
+  dispatch => {
+    for (let i = 0; i < 3; i++) {
+      dispatch(fetchUser(randomUserId()));
     }
   }
 );
 
-export const fetchUsersIfLow = () => (
+export const firstUserFetch = () => (
   (dispatch, getState) => {
-    if (Object.keys(getState()).length <= 3) dispatch(fetchUsers());
+    if (Object.keys(getState()).length <= 3) dispatch(fetchUsers(randomUserId()));
   }
 );
