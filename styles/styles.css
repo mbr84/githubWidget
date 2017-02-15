@@ -1,0 +1,22 @@
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+.refresh-button {
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  position: relative;
+}
+
+.refresh-button::before {
+  content: "";
+  height: 1.5px;
+  width: 1.5px;
+  border-radius: 50%;
+  background: black;
+  position: absolute;
+  left: -6px;
+  top: 7px;
+}

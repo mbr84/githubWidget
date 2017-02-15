@@ -1,44 +1,67 @@
-import SECRET_TOKEN from '../util/secrets.js';
+import { SECRET_GITHUB_TOKEN } from '../util/secrets.js';
 export const RECEIVE_USER = 'RECEIVE_USER';
-export const REMOVE_USER = 'REMOVE_USER';
+export const REPLACE_USER = 'REPLACE_USER';
+export const FULL_FETCH = 'FULL_FETCH';
+export const BEGIN_FETCHING = 'BEGIN_FETCHING';
 
 export const receiveUser = user => ({
   type: RECEIVE_USER,
   user,
 });
 
-export const removeUser = user => ({
-  type: REMOVE_USER,
-  user,
+export const replaceUser = (newUser, oldUser) => ({
+  type: REPLACE_USER,
+  oldUser,
+  newUser,
+});
+
+export const fullFetch = (users) => ({
+  type: FULL_FETCH,
+  users,
+});
+
+export const fetching = () => ({
+  type: BEGIN_FETCHING,
 });
 
 const randomUserId = () => Math.floor(10000000 * Math.random() + 100);
 
-export const fetchUser = (userId) => (
+export const refreshSuggestion = (oldUser) => (
   dispatch => {
-    fetch(`https://api.github.com/user/${userId}?access_token=${SECRET_TOKEN}`)
+    fetch(`https://api.github.com/user/${randomUserId()}?access_token=${SECRET_GITHUB_TOKEN}`)
     .then(response => {
       if (response.status >= 400) {
-        fetchUser(randomUserId());
+        refreshSuggestion(oldUser);
       }
       return response.json();
     })
-    .then(json => {
-      if (json.message !== 'Not Found') dispatch(receiveUser(json));
+    .then(newUser => {
+      if (newUser.message !== 'Not Found') {
+        dispatch(replaceUser(newUser, oldUser));
+      }
     });
   }
 );
 
-export const fetchUsers = () => (
-  dispatch => {
-    for (let i = 0; i < 3; i++) {
-      dispatch(fetchUser(randomUserId()));
-    }
-  }
-);
+// export const refreshSuggestion = (oldUser) => (
+//   (dispatch) => {
+//     fetchUser(randomUserId())
+//       .then(newUser => dispatch(replaceUser(newUser, oldUser))
+//     );
+//   }
+// );
 
-export const firstUserFetch = () => (
-  (dispatch, getState) => {
-    if (Object.keys(getState()).length <= 3) dispatch(fetchUsers(randomUserId()));
-  }
-);
+
+export const fetchUsers = () => {
+  const newUsers = [];
+  return dispatch => (
+    fetch(`https://api.github.com/users?since=${randomUserId()}&access_token=${SECRET_GITHUB_TOKEN}`)
+      .then(response => (response.json()))
+      .then(users => {
+        for (let i = 0; i < 3; i++) {
+          newUsers.push(users[Math.floor(Math.random() * 30)]);
+        }
+        dispatch(fullFetch(newUsers));
+      })
+  );
+};

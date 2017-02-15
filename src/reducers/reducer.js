@@ -1,23 +1,40 @@
 import { RECEIVE_USER,
-         REMOVE_USER } from '../actions/actions';
-import merge from 'lodash/merge';
+         REPLACE_USER,
+         BEGIN_FETCHING,
+         FULL_FETCH } from '../actions/actions';
 
-const rootReducer = (state = {}, action) => {
+const RootReducer = (state = { users: [], isFetching: true }, action) => {
   Object.freeze(state);
-  let newUser;
-  let nextState;
+  const newUsersArr = state.users;
 
   switch (action.type) {
     case RECEIVE_USER:
-      newUser = { [action.user.id]: action.user };
-      return merge({}, state, newUser);
-    case REMOVE_USER:
-      nextState = merge({}, state);
-      delete nextState[action.user.id];
-      return nextState;
+      newUsersArr.push({ [action.user.id]: action.user });
+      return {
+        users: newUsersArr,
+        isFetching: false,
+      };
+    case REPLACE_USER:
+      for (let i = 0; i < newUsersArr.length; i++) {
+        if (newUsersArr[i].id === action.oldUser.id) {
+          newUsersArr[i] = action.newUser;
+          break;
+        }
+      }
+      return { users: newUsersArr, isFetching: false };
+    case FULL_FETCH:
+      return {
+        users: action.users,
+        isFetching: false,
+      };
+    case BEGIN_FETCHING:
+      return {
+        users: state.users,
+        isFetching: true,
+      };
     default:
       return state;
   }
 };
 
-export default rootReducer;
+export default RootReducer;

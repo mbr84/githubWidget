@@ -1,16 +1,13 @@
 import { createStore, applyMiddleware } from 'redux';
-import rootReducer from '../reducers/reducer.js';
+import RootReducer from '../reducers/reducer.js';
 import thunkMiddleware from 'redux-thunk';
 
-const configureStore = (preloadedState = {}) => {
+const configureStore = (preloadedState = { users: [], isFetching: false }) => {
   const store = createStore(
-    rootReducer,
+    RootReducer,
     preloadedState,
     applyMiddleware(thunkMiddleware)
   );
-  store.subscribe(() => {
-    localStorage.state = JSON.stringify(store.getState());
-  });
   return store;
 };
 

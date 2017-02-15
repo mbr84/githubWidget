@@ -1,12 +1,8 @@
 import React from 'react';
-import UserCard from './userCard';
+import ListContainer from './listContainer';
 
 const Widget = () => (
-  <div>
-    <UserCard />
-    <UserCard />
-    <UserCard />
-  </div>
+  <ListContainer />
 );
 
 export default Widget;
