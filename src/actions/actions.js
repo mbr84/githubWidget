@@ -43,15 +43,6 @@ export const refreshSuggestion = (oldUser) => (
   }
 );
 
-// export const refreshSuggestion = (oldUser) => (
-//   (dispatch) => {
-//     fetchUser(randomUserId())
-//       .then(newUser => dispatch(replaceUser(newUser, oldUser))
-//     );
-//   }
-// );
-
-
 export const fetchUsers = () => {
   const newUsers = [];
   return dispatch => (
