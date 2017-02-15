@@ -1,13 +1,7 @@
 import { SECRET_GITHUB_TOKEN } from '../util/secrets.js';
-export const RECEIVE_USER = 'RECEIVE_USER';
 export const REPLACE_USER = 'REPLACE_USER';
 export const FULL_FETCH = 'FULL_FETCH';
 export const BEGIN_FETCHING = 'BEGIN_FETCHING';
-
-export const receiveUser = user => ({
-  type: RECEIVE_USER,
-  user,
-});
 
 export const replaceUser = (newUser, oldUser) => ({
   type: REPLACE_USER,

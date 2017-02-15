@@ -1,5 +1,4 @@
-import { RECEIVE_USER,
-         REPLACE_USER,
+import { REPLACE_USER,
          BEGIN_FETCHING,
          FULL_FETCH } from '../actions/actions';
 
@@ -8,12 +7,6 @@ const RootReducer = (state = { users: [], isFetching: true }, action) => {
   const newUsersArr = state.users;
 
   switch (action.type) {
-    case RECEIVE_USER:
-      newUsersArr.push({ [action.user.id]: action.user });
-      return {
-        users: newUsersArr,
-        isFetching: false,
-      };
     case REPLACE_USER:
       for (let i = 0; i < newUsersArr.length; i++) {
         if (newUsersArr[i].id === action.oldUser.id) {
